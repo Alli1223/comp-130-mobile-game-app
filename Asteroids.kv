@@ -1,6 +1,7 @@
 #:kivy 1.0.9
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
 
+
 <Button>:
     font_size: 20
     color: 244,244,244,1
@@ -15,70 +16,74 @@ MyScreenManager:
     Game:
 
 
-
-
 <StartScreen>:
     name: 'StartScreen'
     BoxLayout:
-        orientation: 'vertical'
-        Button:
-            text: "play"
-            on_press:
-                root.manager.transition.direction = 'left'
-                root.manager.current = 'Game'
-            #on_release:
-            #    app.Boom()
+        orientation: 'horizontal'
 
         Button:
-            text: "View HighScores"
-            on_press:
-                root.manager.transition.direction = 'right'
-                root.manager.current = 'HighScores'
-
-
-
-        Label:
-            text: root.hello_world
-
+            text: "play sound"
+            on_press: root.PlaySound()
+            background_color:0.7,0.9,0.9,1
         BoxLayout:
-            canvas:
-                Color:
-                    rgb: 0.8, 0.2, 0.2
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+            orientation: 'vertical'
+            Button:
+                text: "play"
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'Game'
+
+
+            Button:
+                text: "View HighScores"
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.current = 'HighScores'
+            Label:
+                text: root.hello_world
+
             BoxLayout:
-                orientation: 'vertical'
-                Label:
-                    text: 'Username'
-                    font_size: 20
-                    #size_hint: 0.3, 0.2
-                    #pos_hint: {"x":0.13, "y": 0.13}
-
+                canvas:
+                    Color:
+                        rgb: 0.8, 0.2, 0.2
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
                 BoxLayout:
-                    orientation: 'horizontal'
-                    TextInput:
-                        size: 50,50
-                        id: username_input
-                        font_size: 14
-                        text: 'Enter Username here'
-                        multiline: False
-                        focus: True
-                        on_text: root.on_text(self.text)
-                        on_text_validate: root.on_text(self.text)
-
-
-                    Button:
-                        text: "Okay"
-                        on_press: root.username_button_pressed()
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Username'
+                        font_size: 20
                         #size_hint: 0.3, 0.2
-                        #pos_hint: {"x": 0.4, "top":1}
+                        #pos_hint: {"x":0.13, "y": 0.13}
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        TextInput:
+                            size: 50,50
+                            id: username_input
+                            font_size: 14
+                            text: 'Enter Username here'
+                            multiline: False
+                            focus: True
+                            on_text: root.on_text(self.text)
+                            on_text_validate: root.on_text(self.text)
+
+
+                        Button:
+                            text: "Okay"
+                            on_press: root.username_button_pressed()
+                            #size_hint: 0.3, 0.2
+                            #pos_hint: {"x": 0.4, "top":1}
+        Button:
+            text: "Other button"
+            on_press: print("button")
+            background_color: 0,0,0,1
 
 <HighScores>:
     name: 'HighScores'
     FloatLayout:
         BoxLayout:
-
             Button:
                 text: "Back"
                 size_hint: 0.1, 0.05
@@ -87,13 +92,11 @@ MyScreenManager:
                     root.manager.transition.direction = 'left'
                     root.manager.current = 'StartScreen'
 
-
             Button:
                 text: "View"
                 on_press: root.highscores_button_pressed()
                 size_hint: 1, 0.05
                 pos_hint: {"x": 0.4, "top":1}
-
 
 
         Label:
@@ -105,10 +108,3 @@ MyScreenManager:
             valign: 'middle'
             #size_hint: 0.8,0.4
             pos_hint: {"x": 0, "top":1}
-
-         #   canvas:
-         #       Color:
-         #           rgb: 0.5, 1, 0.5
-         #       Rectangle:
-         #           pos: self.pos
-         #           size: self.size

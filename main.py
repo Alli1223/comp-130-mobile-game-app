@@ -7,6 +7,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
+from kivy.graphics import *
 from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Triangle, Line)
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.instructions import InstructionGroup, Canvas
@@ -17,12 +18,14 @@ from kivy.uix.image import Image
 from kivy.network.urlrequest import UrlRequest
 from kivy.properties import NumericProperty, ReferenceListProperty,\
 ObjectProperty, StringProperty, ListProperty
-from kivy.core.window import Window
+from kivy.core.window import Window, WindowBase
 from kivy.vector import Vector
 from kivy.clock import Clock
 from kivy.animation import Animation
 import math
-from random import random
+import random
+import time
+
 import cgitb
 cgitb.enable()
 
@@ -32,7 +35,13 @@ class StartScreen(Screen):
     def on_text(self, username_text):
         print('The widget', self, 'have:', username_text)
         self.username_text = username_text
-        return username_text
+        #return username_text
+
+    def PlaySound(self):
+        sound = SoundLoader.load(r'.\Sounds\Melody.wav')
+        if sound:
+            print("Sound is %.3f seconds long" % sound.length)
+            sound.play()
 
 
     textinput = TextInput()
@@ -52,82 +61,77 @@ class StartScreen(Screen):
         req = UrlRequest("http://bsccg08.ga.fal.io/Input_names/?FirstName=" + username, self.update_string)
 
 
+asteroid_speed = 3                  #Lengh in seconds it takes the asteroids to move across the screen
 
 
-class Asteroid_movement(Widget):
+class Asteroid_Movement(Widget):
+    asteroids = ListProperty(())
+    PlayerScore = NumericProperty(0)
+    def Asteroid_spawn(self):
+        Animation.cancel_all(self)
+        targetX = NumericProperty(0)
+        targetY = NumericProperty(0)
+        self.go_left(instance=self, value=1)
+        self.go_up(instance=self,value=1)
+        #self.go_up(instance=self, value=1)
+    def go_left(self, instance, value):
+        animation = Animation(x= -100, y = random.randrange(0, self.parent.height), duration=asteroid_speed, transition='linear')
+        animation.bind(on_progress = self.on_progess)
+        animation.bind(on_complete = self.go_right)
+        animation.start(self)
+    def go_right(self, instance, value):
+        animation = Animation(x= self.parent.width, y= random.randrange(0, self.parent.height), duration=asteroid_speed)
+        animation.bind(on_progress = self.on_progess)
+        animation.bind(on_complete = self.go_left)
+        animation.start(self)
+    def go_up(self,instance, value):
+        animation = Animation(x= self.parent.width, y= random.randrange(0, self.parent.width), duration=asteroid_speed)
+        animation.bind(on_progress = self.on_progess)
+        animation.bind(on_complete = self.go_down)
+        animation.start(self)
+    def go_down(self,instance, value):
+        animation = Animation(x= self.parent.width, y= random.randrange(0, self.parent.width), duration=3)
+        animation.bind(on_progress = self.on_progess)
+        animation.bind(on_complete = self.go_down)
+        animation.start(self)
+
+
+    def on_start(self,instance,value):
+        pass
+    def on_progess(self,instance, value,progression):
+        pass
+        if progression > 0.9:
+            print("Progression")
+
+        #if self.collide_point(30,30):
+        #    self.PlayerScore += 1
+
+
+
+########################################################################
+class Asteroid_properties(Widget):
     pass
-
-
-class Boom(Image):
-    sound = SoundLoader.load("Sounds\Boom.wav")
-    def Boom(self, **kwargs):
-        self.__class__.sound.play()
-        super(Boom, self).__init__(**kwargs)
-
-class Ammo(Image):
-
-    def shoot(self, tx, ty, target):
-        self.target = target
-        self.animation = Animation(x=tx, top=ty)
-        self.animation.bind(on_start = self.on_start)
-        self.animation.bind(on_progress = self.on_progess)
-        self.animation.bind(on_complete = self.on_stop)
-        self.animation.start(self)
-
-
-    def on_start(self, instance, value):
-        self.boom = Boom()
-        self.boom.center = self.center
-        self.parent.add_widget(self.boom)
-
-    def on_progress(self, instance, value, progression):
-        if progression >= 0.1:
-            self.parent.remove_widget(self.boom)
-        if self.target.collide_ammo(self):
-            self.animation.stop(self)
-
-    def on_stop(self, instance, value):
-        self.parent.remove_widget(self)
-
-class Shot(Ammo):
-    pass
-
-
-
-
-
-
 
 class Game(Screen, Widget):
-    Asteroid = ObjectProperty(None)
-
-    #def serve_ball(self, vel=(4, 0)):
-    #    self.ball.center = self.center
-    #    self.ball.velocity = vel
-    def update(self):
-        self.Asteroid.move()
-
-        if (self.ball.y < self.y) or (self.ball.top > self.top):
-            self.ball.velocity_y *= -1
-
-
-
+    pass
 
 
 #class controling the movement of the ship
 class Ship(Widget):
-
-    xtouch = NumericProperty(0)
-    ytouch = NumericProperty(0)
-    degrees = NumericProperty(0)
+    xtouch = NumericProperty(0.0)
+    ytouch = NumericProperty(0.0)
+    degrees = NumericProperty(0.0)
+    PlayerScore = NumericProperty(0)
 
     def on_touch_down(self, touch):
 
         xtouch = touch.x
         ytouch = touch.y
+        print(xtouch,ytouch)
 
         Animation.cancel_all(self)
-        anim = Animation(x=xtouch, y=ytouch, duration=2.5, t='out_sine')
+        anim = Animation(x=xtouch, y=ytouch, duration=0.5, t='linear')
+        anim.bind(on_progress = self.on_progess)
         anim.start(self)
 
         #x1,y1 is the ships current position
@@ -137,25 +141,26 @@ class Ship(Widget):
         x2 = touch.x
         y2 = touch.y
 
-
         deltaX = x2 - x1
         deltaY = y2 - y1
 
         angle = math.atan2(deltaY, deltaX)
 
         #convert it from 180 degrees to 360
-        if (self.degrees <= 0):
+        if self.degrees <= 0:
             self.degrees = 360 - (-self.degrees)
-
         #convert it from radians to degrees
         self.degrees = angle * (180 / math.pi)
         #print (self.degrees)
 
+    def on_progess(self,instance, value,progression):
+        if self.collide_widget(self):
+            self.PlayerScore += 1
+            print(self.PlayerScore)
 
 
 #Gets the highscores from the database
 class HighScores(Screen):
-
     Highscores = StringProperty()
     def update_string(self, req, results):
         self.Highscores = results
@@ -164,27 +169,18 @@ class HighScores(Screen):
     def highscores_button_pressed(self):
         req = UrlRequest("http://bsccg08.ga.fal.io/Highscores/?Highscore=printnames", self.update_string)
 
-
 #Class used for managing the different screens
 class MyScreenManager(ScreenManager):
     pass
 
-HSpresentation = Builder.load_file("HighScores.kv")
+HSpresentation = Builder.load_file("Game.kv")
 Asteroidspresentation = Builder.load_file("Asteroids.kv")
 
 class Asteroids(App):
     def build(self):
         game = Asteroidspresentation
-        asteroid = HSpresentation
-        #Game.serve_ball()
-        #Clock.schedule_interval(Game.update, 1 / 60.0)
+        #asteroid = HSpresentation
         return game
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
