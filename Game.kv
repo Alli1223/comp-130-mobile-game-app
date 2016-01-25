@@ -2,6 +2,7 @@
 
 
 <Game>:
+    player_ship: player_ship
     name: "Game"
     Button:
         size_hint: 0.2, 0.1
@@ -10,41 +11,27 @@
             root.manager.transition.direction = 'right'
             root.manager.current = 'StartScreen'
         text: "Back"
+
     Ship:
+        id: player_ship
     Asteroid_Movement:
-    #Asteroid_properties:
 
 
 <Asteroid_Movement>:
-    size_hint: None, None
-    canvas:
-        Ellipse:
-            size: 50,50
-            pos: root.pos
-        Color:
-            rgb: 1,0.2,1
     Button:
-        text: "Start"
-        size: 100,50
-        pos_hint: {"x": 0.5, "top": 1}
-        on_press: root.Asteroid_spawn()
+        pos: 250, 250
+        size: 100,100
+        on_press: root.start()
+        on_release: self.parent.remove_widget(self)
+        text: "PLAY"
 
-
-
-#<Asteroid_properties>:
-#    canvas:
-#        Ellipse:
-#            size: 50, 50
-#            pos: self.pos
-#        Color:
-#            rgb: 1,0.2,1
 
 <Ship>:
+    id: player_ship
     Button:
         size_hint: None, None
         size: 50,20
-        background_color: 0.3,0.6,0.8
-        #pos_hint: {'center_x': .5, 'center_y': .5}
+        background_color: 0.3,0.6,0.8,1
         pos: (root.x - (self.width/2)),(root.y - (self.height/2))
         canvas.before:
             PushMatrix
@@ -53,22 +40,22 @@
                 origin: self.center
         canvas.after:
             PopMatrix
-    Label:
-        pos:550,400
-        text: "Angle: " + str(root.degrees)
 
 
-<Asteroid_Movement>:
-    size_hint:None,None
-    Label:
-        text: str(root.PlayerScore)
-#<Ammo>:
-   # size_hint: None, None
-   # canvas:
-   #     color:
-   #         rgb: 1, 0, 1
-   #     Rectangle:
-   #         #pos:self.pos
-   #         #size:self.size
+<Asteroid>:
+    canvas:
+        Ellipse:
+            size: 25,25
+            pos: root.pos
+        Color:
+            rgb: 0.8,0.2,0.8,0.3
+
+
+
+
+
+
+
+
 
 

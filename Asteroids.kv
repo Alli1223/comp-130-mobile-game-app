@@ -9,8 +9,6 @@
 
 
 MyScreenManager:
-    #transition: FadeTransition()
-    duration: 1
     StartScreen:
     HighScores:
     Game:
@@ -20,11 +18,10 @@ MyScreenManager:
     name: 'StartScreen'
     BoxLayout:
         orientation: 'horizontal'
-
         Button:
             text: "play sound"
             on_press: root.PlaySound()
-            background_color:0.7,0.9,0.9,1
+            background_color: 0.7,0.9,0.9,1
         BoxLayout:
             orientation: 'vertical'
             Button:
@@ -32,16 +29,13 @@ MyScreenManager:
                 on_press:
                     root.manager.transition.direction = 'left'
                     root.manager.current = 'Game'
-
-
             Button:
                 text: "View HighScores"
                 on_press:
                     root.manager.transition.direction = 'right'
                     root.manager.current = 'HighScores'
             Label:
-                text: root.hello_world
-
+                text: root.user_input
             BoxLayout:
                 canvas:
                     Color:
@@ -54,14 +48,11 @@ MyScreenManager:
                     Label:
                         text: 'Username'
                         font_size: 20
-                        #size_hint: 0.3, 0.2
-                        #pos_hint: {"x":0.13, "y": 0.13}
 
                     BoxLayout:
                         orientation: 'horizontal'
                         TextInput:
-                            size: 50,50
-                            id: username_input
+
                             font_size: 14
                             text: 'Enter Username here'
                             multiline: False
@@ -73,13 +64,10 @@ MyScreenManager:
                         Button:
                             text: "Okay"
                             on_press: root.username_button_pressed()
-                            #size_hint: 0.3, 0.2
-                            #pos_hint: {"x": 0.4, "top":1}
         Button:
-            text: "Other button"
+            text: " "
             on_press: print("button")
-            background_color: 0,0,0,1
-
+            background_color: 0.7,0.9,0.9,1
 <HighScores>:
     name: 'HighScores'
     FloatLayout:
@@ -93,18 +81,29 @@ MyScreenManager:
                     root.manager.current = 'StartScreen'
 
             Button:
-                text: "View"
+                text: "View Highscores"
                 on_press: root.highscores_button_pressed()
                 size_hint: 1, 0.05
                 pos_hint: {"x": 0.4, "top":1}
-
+            Button:
+                text: "submit"
+                on_press: root.scores_button_pressed()
+                size_hint: 1, 0.05
+                pos_hint: {"x": 0.4, "top":1}
 
         Label:
-
             text: root.Highscores
+            text_size: root.width, None
+            #size: self.texture_size
+            halign: 'center'
+            valign: 'middle'
+            #size_hint: 0.8,0.4
+            pos_hint: {"x": 0, "top":1}
+        Label:
+            text: root.scores
             text_size: root.width, None
             size: self.texture_size
             halign: 'center'
             valign: 'middle'
             #size_hint: 0.8,0.4
-            pos_hint: {"x": 0, "top":1}
+            pos_hint: {"x": 0.1, "top":0.8}
